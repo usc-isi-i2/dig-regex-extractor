@@ -25,7 +25,7 @@ class RegexExtractor(Extractor):
                 extracts = list()
                 for r in self.regex:
                     extracts.extend(r.findall(doc['text']))
-            return extracts
+            return list(frozenset(extracts))
         except:
             return list()
 
