@@ -1,24 +1,30 @@
 import unittest
-import pygtrie as trie
 import re
-from digExtractor.extractor import extract
-from digRegexExtractor.regex_extractor import regex_extractor
-from digRegexExtractor.regex_extractor import get_regex_extractor
-from digRegexExtractor.name_regex_extractor import get_name_regex_extractor
+from digExtractor.extractor import Extractor
+from digExtractor.extractor_processor import ExtractorProcessor
+from digRegexExtractor.regex_extractor import RegexExtractor
+
 
 class TestNameRegexExtractor(unittest.TestCase):
-
-    def test_extractor(self):
-        doc = { 'a': 'my name is foo', 'b': 'world'}
-        curried_extract = get_regex_extractor(re.compile('(?:my[\s]+name[\s]+is[\s]+([-a-z0-9@$!]+))', re.IGNORECASE))
-        updated_doc = curried_extract(doc, 'e', ['a'])
-        self.assertEqual(updated_doc['e'], ['foo'])
 
 
     def test_name_extractor(self):
         doc = { 'a': 'my name is foo', 'b': 'world'}
-        updated_doc = get_name_regex_extractor()(doc, 'e', ['a'])
-        self.assertEqual(updated_doc['e'], ['foo'])
+        name_regex = re.compile('(?:my[\s]+name[\s]+is[\s]+([-a-z0-9@$!]+))', re.IGNORECASE)
+        e = RegexExtractor().set_regex(name_regex).set_metadata({'extractor': 'name_regex'})
+        ep = ExtractorProcessor().set_input_fields('a').set_output_field('e').set_extractor(e)
+        updated_doc = ep.extract(doc)
+        self.assertEqual(updated_doc['e']['value'], ['foo'])
+
+
+    def test_double_name_extractor(self):
+        doc = { 'a': 'my name is foo', 'b': 'world'}
+        name_regex = re.compile('(?:my[\s]+name[\s]+is[\s]+([-a-z0-9@$!]+))', re.IGNORECASE)
+        e = RegexExtractor().set_regex([name_regex, name_regex]).set_metadata({'extractor': 'name_regex'})
+        ep = ExtractorProcessor().set_input_fields('a').set_output_field('e').set_extractor(e)
+        updated_doc = ep.extract(doc)
+        self.assertEqual(updated_doc['e']['value'], ['foo', 'foo'])
+
 
 if __name__ == '__main__':
     unittest.main()
