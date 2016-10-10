@@ -14,7 +14,7 @@ class TestNameRegexExtractor(unittest.TestCase):
         e = RegexExtractor().set_regex(name_regex).set_metadata({'extractor': 'name_regex'})
         ep = ExtractorProcessor().set_input_fields('a').set_output_field('e').set_extractor(e)
         updated_doc = ep.extract(doc)
-        self.assertEqual(updated_doc['e']['value'], ['foo'])
+        self.assertEqual(updated_doc['e'][0]['value'], ['foo'])
 
 
     def test_double_name_extractor(self):
@@ -24,7 +24,7 @@ class TestNameRegexExtractor(unittest.TestCase):
         e = RegexExtractor().set_regex([name_regex, call_me_name_regex]).set_metadata({'extractor': 'name_regex'})
         ep = ExtractorProcessor().set_input_fields('a').set_output_field('e').set_extractor(e)
         updated_doc = ep.extract(doc)
-        self.assertEqual(updated_doc['e']['value'], ['foo', 'bar'])
+        self.assertEqual(updated_doc['e'][0]['value'], ['foo', 'bar'])
 
 
     def test_duplicate_name_extractor(self):
@@ -33,7 +33,7 @@ class TestNameRegexExtractor(unittest.TestCase):
         e = RegexExtractor().set_regex(name_regex).set_metadata({'extractor': 'name_regex'})
         ep = ExtractorProcessor().set_input_fields('a').set_output_field('e').set_extractor(e)
         updated_doc = ep.extract(doc)
-        self.assertEqual(updated_doc['e']['value'], ['foo'])
+        self.assertEqual(updated_doc['e'][0]['value'], ['foo'])
 
 
 if __name__ == '__main__':
